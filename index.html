@@ -1,0 +1,577 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Handgriff-Trainer</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14151A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Handgriffe">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+
+:root{
+  --anthrazit:#14151A;
+  --flaeche:#1C1E25;
+  --flaeche-hoch:#242730;
+  --rand:#333744;
+  --hell:#ECEAE5;
+  --grau:#939AA8;
+  --rot:#BE1522;
+  --rot-hell:#E8283A;
+  --gelb:#F5C518;
+  --display:'Oswald','Arial Narrow',sans-serif;
+  --body:'IBM Plex Sans',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--anthrazit);color:var(--hell);font-family:var(--body);
+  font-size:16px;line-height:1.5;min-height:100%}
+body{padding:0 0 96px}
+.wrap{max-width:720px;margin:0 auto;padding:0 18px}
+
+/* ---------- Kopf ---------- */
+header{border-bottom:1px solid var(--rand);padding:20px 0 16px;margin-bottom:22px}
+.eyebrow{font-family:var(--display);font-size:12px;letter-spacing:.28em;
+  text-transform:uppercase;color:var(--grau)}
+h1{font-family:var(--display);font-weight:600;font-size:34px;line-height:1;
+  letter-spacing:.02em;text-transform:uppercase;margin-top:4px}
+h1 span{color:var(--rot-hell)}
+
+/* ---------- Segmentierte Schalter ---------- */
+.seg{display:flex;gap:2px;background:var(--flaeche);border:1px solid var(--rand);
+  border-radius:2px;padding:2px;margin-top:14px}
+.seg button{flex:1;background:none;border:0;color:var(--grau);cursor:pointer;
+  font-family:var(--display);font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+  padding:11px 4px;border-radius:1px}
+.seg button[aria-pressed=true]{background:var(--rot);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--gelb);outline-offset:2px}
+
+nav.tabs{display:flex;gap:26px;margin-top:20px}
+nav.tabs button{background:none;border:0;padding:0 0 8px;cursor:pointer;color:var(--grau);
+  font-family:var(--display);font-size:15px;letter-spacing:.16em;text-transform:uppercase;
+  border-bottom:2px solid transparent}
+nav.tabs button[aria-selected=true]{color:var(--hell);border-color:var(--rot-hell)}
+
+/* ---------- Filter ---------- */
+.filter-zeile{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;align-items:center}
+.label{font-family:var(--display);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--grau);width:100%;margin-bottom:2px}
+.chip{background:var(--flaeche);border:1px solid var(--rand);color:var(--grau);
+  border-radius:999px;padding:7px 15px;font-size:14px;cursor:pointer;font-family:var(--body)}
+.chip[aria-pressed=true]{background:var(--hell);border-color:var(--hell);color:var(--anthrazit);font-weight:600}
+.chip:focus-visible{outline:2px solid var(--gelb);outline-offset:2px}
+
+/* ---------- Aufgabenkarte ---------- */
+.karte{background:var(--flaeche);border:1px solid var(--rand);border-left:4px solid var(--rot);
+  border-radius:2px;padding:20px;margin-bottom:14px}
+.karte .kat{font-family:var(--display);font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--rot-hell)}
+.karte h2{font-family:var(--display);font-weight:600;font-size:26px;line-height:1.1;
+  text-transform:uppercase;letter-spacing:.01em;margin:6px 0 12px}
+.gruppe .karte h2{font-size:34px}
+.karte p{color:#C9CDD6;margin-bottom:12px}
+.gruppe .karte p{font-size:19px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 22px;border-top:1px solid var(--rand);
+  padding-top:12px;font-size:14px;color:var(--grau)}
+.meta b{font-family:var(--display);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--grau);display:block;font-weight:400}
+.meta span{color:#C9CDD6}
+.dauer{font-family:var(--mono);font-size:13px;background:var(--flaeche-hoch);
+  border:1px solid var(--rand);padding:3px 9px;border-radius:2px;color:var(--hell)}
+.stationsnr{font-family:var(--mono);font-size:12px;color:var(--gelb);letter-spacing:.1em}
+
+/* ---------- Knöpfe ---------- */
+.btn{display:block;width:100%;border:0;border-radius:2px;cursor:pointer;
+  font-family:var(--display);font-size:17px;letter-spacing:.16em;text-transform:uppercase;
+  padding:19px;background:var(--rot);color:#fff}
+.btn:active{background:#9C0F1B}
+.btn.sekundaer{background:transparent;border:1px solid var(--rand);color:var(--hell);font-size:14px;padding:15px}
+.btn:focus-visible{outline:2px solid var(--gelb);outline-offset:2px}
+.btn-reihe{display:flex;gap:10px;margin-top:16px}
+.btn-reihe .btn{flex:1}
+.klein{background:none;border:1px solid var(--rand);color:var(--grau);border-radius:2px;
+  padding:7px 12px;font-size:13px;cursor:pointer;font-family:var(--body)}
+.klein:hover{color:var(--hell);border-color:var(--grau)}
+.klein.gefahr:hover{color:var(--rot-hell);border-color:var(--rot)}
+
+/* ---------- Leerer Zustand ---------- */
+.leer{border:1px dashed var(--rand);border-radius:2px;padding:34px 20px;text-align:center;color:var(--grau)}
+.leer strong{display:block;font-family:var(--display);text-transform:uppercase;
+  letter-spacing:.14em;color:var(--hell);font-size:16px;margin-bottom:6px}
+
+/* ---------- Formular ---------- */
+form{background:var(--flaeche);border:1px solid var(--rand);border-radius:2px;padding:18px;margin-bottom:22px}
+form label{display:block;font-family:var(--display);font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--grau);margin:14px 0 5px}
+form label:first-child{margin-top:0}
+input,textarea,select{width:100%;background:var(--anthrazit);border:1px solid var(--rand);
+  color:var(--hell);border-radius:2px;padding:11px;font-family:var(--body);font-size:16px}
+input:focus,textarea:focus,select:focus{outline:0;border-color:var(--gelb)}
+textarea{min-height:82px;resize:vertical}
+.feld-paar{display:flex;gap:12px}
+.feld-paar>div{flex:1}
+
+.liste-zeile{display:flex;align-items:flex-start;gap:12px;border-bottom:1px solid var(--rand);padding:14px 0}
+.liste-zeile .txt{flex:1;min-width:0}
+.liste-zeile .txt strong{display:block;font-family:var(--display);font-size:17px;
+  text-transform:uppercase;letter-spacing:.01em;font-weight:600}
+.liste-zeile .txt small{color:var(--grau)}
+
+/* ---------- Timer (Signature) ---------- */
+#timer{position:fixed;inset:0;background:var(--anthrazit);z-index:50;display:none;
+  flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+#timer.an{display:flex}
+#timer .streifen{position:absolute;left:0;right:0;height:14px;opacity:0;transition:opacity .4s;
+  background:repeating-linear-gradient(45deg,var(--gelb) 0 18px,var(--anthrazit) 18px 36px)}
+#timer .streifen.oben{top:0}
+#timer .streifen.unten{bottom:0}
+#timer.warnung .streifen{opacity:1}
+#timer .titel{font-family:var(--display);font-size:20px;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--grau);max-width:24ch;margin-bottom:20px}
+.ring{position:relative;width:min(78vw,320px);aspect-ratio:1}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:6}
+.ring .bahn{stroke:var(--rand)}
+.ring .fortschritt{stroke:var(--rot-hell);stroke-linecap:butt;transition:stroke-dashoffset .35s linear}
+#timer.warnung .ring .fortschritt{stroke:var(--gelb)}
+.ziffern{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:min(17vw,66px);letter-spacing:-.02em}
+#timer .aktionen{display:flex;gap:12px;margin-top:34px;width:min(100%,340px)}
+#timer .aktionen .btn{flex:1}
+
+.loesung{border-top:1px solid var(--rand);margin-top:14px;padding-top:12px}
+.loesung summary{font-family:var(--display);font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gelb);cursor:pointer;list-style:none}
+.loesung summary::-webkit-details-marker{display:none}
+.loesung summary::before{content:'▸ ';font-size:13px}
+.loesung[open] summary::before{content:'▾ '}
+.loesung p{margin:10px 0 0;color:#C9CDD6;font-size:15px}
+.gruppe .loesung p{font-size:18px}
+.hinweis{color:var(--grau);font-size:13px;margin-top:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Freiwillige Feuerwehr</div>
+    <h1>Handgriff<span>·</span>Trainer</h1>
+    <div class="seg" role="group" aria-label="Modus">
+      <button id="m-einzel" aria-pressed="true">Einzeln</button>
+      <button id="m-gruppe" aria-pressed="false">Gruppe</button>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button id="t-ueben" role="tab" aria-selected="true">Üben</button>
+      <button id="t-pflege" role="tab" aria-selected="false">Aufgaben</button>
+    </nav>
+  </header>
+
+  <!-- ============ ÜBEN ============ -->
+  <section id="ansicht-ueben">
+    <div class="filter-zeile" id="dauer-filter">
+      <span class="label">Dauer</span>
+    </div>
+    <div class="filter-zeile" id="kat-filter">
+      <span class="label">Kategorie</span>
+    </div>
+    <div class="filter-zeile" id="stationen-filter" hidden>
+      <span class="label">Stationen (parallele Trupps)</span>
+      <button class="chip" data-stationen="1" aria-pressed="true">1</button>
+      <button class="chip" data-stationen="2" aria-pressed="false">2</button>
+      <button class="chip" data-stationen="3" aria-pressed="false">3</button>
+      <button class="chip" data-stationen="4" aria-pressed="false">4</button>
+    </div>
+
+    <div id="ziehung" style="margin:22px 0 0"></div>
+    <div id="ueben-aktionen"></div>
+  </section>
+
+  <!-- ============ AUFGABEN PFLEGEN ============ -->
+  <section id="ansicht-pflege" hidden>
+    <form id="formular" autocomplete="off">
+      <div id="formular-titel" class="label" style="margin-bottom:12px">Neue Aufgabe</div>
+      <label for="f-titel">Titel</label>
+      <input id="f-titel" required placeholder="z. B. Mastwurf am Standrohr">
+      <div class="feld-paar">
+        <div>
+          <label for="f-dauer">Dauer in Minuten</label>
+          <input id="f-dauer" type="number" min="1" max="60" step="1" value="5" required>
+        </div>
+        <div>
+          <label for="f-kat">Kategorie</label>
+          <input id="f-kat" list="kat-liste" placeholder="z. B. Knoten">
+          <datalist id="kat-liste"></datalist>
+        </div>
+      </div>
+      <label for="f-text">Ablauf</label>
+      <textarea id="f-text" placeholder="Was ist konkret zu tun?"></textarea>
+      <label for="f-loesung">Lösungshinweise</label>
+      <textarea id="f-loesung" placeholder="Worauf kommt es an? Sieht nur der Übungsleiter."></textarea>
+      <label for="f-material">Material</label>
+      <input id="f-material" placeholder="z. B. Feuerwehrleine, Standrohr">
+      <label for="f-lernziel">Lernziel</label>
+      <input id="f-lernziel" placeholder="Woran erkennt der Übungsleiter, dass es sitzt?">
+      <div class="btn-reihe">
+        <button type="submit" class="btn" id="f-speichern">Aufgabe speichern</button>
+        <button type="button" class="btn sekundaer" id="f-abbrechen" hidden>Abbrechen</button>
+      </div>
+    </form>
+
+    <div class="filter-zeile" style="gap:10px;margin-bottom:16px">
+      <button class="klein" id="export">Aufgaben exportieren</button>
+      <button class="klein" id="import">Aufgaben importieren</button>
+      <button class="klein gefahr" id="reset">Auf Standardaufgaben zurücksetzen</button>
+    </div>
+    <div id="pflege-liste"></div>
+  </section>
+</div>
+
+<!-- ============ TIMER ============ -->
+<div id="timer" role="dialog" aria-label="Laufende Übung">
+  <div class="streifen oben"></div>
+  <div class="titel" id="timer-titel"></div>
+  <div class="ring">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <circle class="bahn" cx="50" cy="50" r="46"></circle>
+      <circle class="fortschritt" id="ring" cx="50" cy="50" r="46"
+              stroke-dasharray="289.03" stroke-dashoffset="0"></circle>
+    </svg>
+    <div class="ziffern" id="ziffern">05:00</div>
+  </div>
+  <div class="aktionen">
+    <button class="btn sekundaer" id="t-pause">Pause</button>
+    <button class="btn" id="t-stopp">Beenden</button>
+  </div>
+  <div class="hinweis" id="timer-hinweis"></div>
+  <div class="streifen unten"></div>
+</div>
+
+<script>
+/* =========================================================================
+   1. Speicher  — nutzt window.storage (Claude-Artefakt) oder localStorage
+      (überall sonst, z. B. wenn du die Datei selbst hostest).
+   ========================================================================= */
+const KEY = 'handgriff-trainer:v2';
+const Speicher = {
+  async lesen(){
+    try{
+      if(window.storage){ const r = await window.storage.get(KEY); return r ? JSON.parse(r.value) : null; }
+      const r = localStorage.getItem(KEY); return r ? JSON.parse(r) : null;
+    }catch(e){ return null; }
+  },
+  async schreiben(daten){
+    try{
+      const s = JSON.stringify(daten);
+      if(window.storage){ await window.storage.set(KEY, s); } else { localStorage.setItem(KEY, s); }
+    }catch(e){ console.warn('Speichern fehlgeschlagen', e); }
+  }
+};
+
+/* =========================================================================
+   2. Beispielaufgaben — durch eure eigenen ersetzen oder in der App pflegen
+   ========================================================================= */
+const STANDARD = [
+  {titel:'Personenschutzschalter prüfen', dauer:5, kategorie:'Technische Hilfeleistung',
+   text:'Prüfe den Personenschutzschalter.',
+   loesung:'Wichtig ist, dass die Prüfung ohne Handschuhe erfolgt.',
+   material:'Personenschutzschalter, Steckdose',
+   lernziel:'Die Prüfung des Personenschutzschalters fehlerfrei absolvieren, wie es vor dessen Einsatz erforderlich ist.'},
+  {titel:'Stativ aufbauen', dauer:10, kategorie:'Technische Hilfeleistung',
+   text:'Baue das Beleuchtungsstativ einsatzbereit auf.',
+   loesung:'Wichtig ist, dass Ersatzakkus am Stativ bereit liegen.',
+   material:'Stativ, Akkus, Beleuchtungseinheit',
+   lernziel:'Der Aufbau des Beleuchtungsstativs ist fehlerfrei und zügig möglich.'},
+  {titel:'Standrohr setzen', dauer:10, kategorie:'Brandbekämpfung',
+   text:'Suche dir einen Unterflurhydranten und setze das Standrohr.',
+   loesung:'Wichtig ist, dass der Systemtrenner genutzt wird, ein Spülvorgang erfolgt und das Standrohr ohne halbe Drehung zurück gesetzt wird.',
+   material:'Standrohr, Standrohrschlüssel, Systemtrenner',
+   lernziel:'Das Standrohr wird zügig und fehlerfrei gesetzt. Der Systemtrenner wird in jedem Fall eingesetzt.'},
+  {titel:'Rauchvorhang setzen', dauer:5, kategorie:'Brandbekämpfung',
+   text:'Setze den Rauchvorhang und verlaste diesen wieder ordnungsgemäß.',
+   loesung:'Es muss auf den Türanschlag geachtet werden und beim Verlasten ist die richtige Falttechnik anzuwenden.',
+   material:'Rauchvorhang',
+   lernziel:'Der Rauchvorhang wird schnell eingesetzt und wieder richtig verlastet.'},
+  {titel:'Funkgerät umstellen', dauer:1, kategorie:'Allgemein',
+   text:'Stelle bei deinem Funkgerät die Ersatz-DMO-Gruppe ein.',
+   loesung:'Das Funkgerät ist auf die 321 zu stellen.',
+   material:'Funkgerät',
+   lernziel:'Das Umstellen der Gruppe erfolgt zügig.'}
+];
+
+const neueId = () => 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+
+/* =========================================================================
+   3. Zustand
+   ========================================================================= */
+let aufgaben = [];
+let zustand = { modus:'einzel', tab:'ueben', dauer:0, kategorie:'alle', stationen:1,
+                gezogen:[], zuletzt:[], bearbeitet:null };
+
+/* =========================================================================
+   4. Ziehen — vermeidet Wiederholungen der zuletzt gezogenen Aufgaben
+   ========================================================================= */
+function passendeAufgaben(){
+  return aufgaben.filter(a =>
+    (zustand.dauer === 0 || a.dauer === zustand.dauer) &&
+    (zustand.kategorie === 'alle' || a.kategorie === zustand.kategorie));
+}
+
+function ziehen(){
+  const pool = passendeAufgaben();
+  const anzahl = Math.min(zustand.modus === 'gruppe' ? zustand.stationen : 1, pool.length);
+  if(!anzahl){ zustand.gezogen = []; zeichnen(); return; }
+
+  const merkTiefe = Math.max(0, Math.min(zustand.zuletzt.length, pool.length - anzahl));
+  const gemieden = zustand.zuletzt.slice(0, merkTiefe);
+  let kandidaten = pool.filter(a => !gemieden.includes(a.id));
+  if(kandidaten.length < anzahl) kandidaten = pool.slice();
+
+  const gewaehlt = [];
+  while(gewaehlt.length < anzahl){
+    const i = Math.floor(Math.random() * kandidaten.length);
+    gewaehlt.push(kandidaten.splice(i,1)[0]);
+  }
+  zustand.gezogen = gewaehlt;
+  zustand.zuletzt = [...gewaehlt.map(a=>a.id), ...zustand.zuletzt].slice(0, 4);
+  zeichnen();
+}
+
+/* =========================================================================
+   5. Darstellung
+   ========================================================================= */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const minuten = n => n === 1 ? '1 Minute' : n + ' Minuten';
+
+function karteHtml(a, nr){
+  const meta = [];
+  if(a.material)  meta.push(`<div><b>Material</b><span>${esc(a.material)}</span></div>`);
+  if(a.lernziel)  meta.push(`<div><b>Lernziel</b><span>${esc(a.lernziel)}</span></div>`);
+  return `<article class="karte">
+    <div class="kat">${nr ? `<span class="stationsnr">Station ${nr} · </span>` : ''}${esc(a.kategorie || 'Ohne Kategorie')}</div>
+    <h2>${esc(a.titel)}</h2>
+    ${a.text ? `<p>${esc(a.text)}</p>` : ''}
+    <div class="meta"><div><span class="dauer">${minuten(a.dauer)}</span></div>${meta.join('')}</div>
+    ${a.loesung ? `<details class="loesung"><summary>Lösungshinweise</summary><p>${esc(a.loesung)}</p></details>` : ''}
+  </article>`;
+}
+
+function zeichnen(){
+  document.body.classList.toggle('gruppe', zustand.modus === 'gruppe');
+  $('m-einzel').setAttribute('aria-pressed', zustand.modus === 'einzel');
+  $('m-gruppe').setAttribute('aria-pressed', zustand.modus === 'gruppe');
+  $('stationen-filter').hidden = zustand.modus !== 'gruppe';
+  $('t-ueben').setAttribute('aria-selected', zustand.tab === 'ueben');
+  $('t-pflege').setAttribute('aria-selected', zustand.tab === 'pflege');
+  $('ansicht-ueben').hidden = zustand.tab !== 'ueben';
+  $('ansicht-pflege').hidden = zustand.tab !== 'pflege';
+
+  // Dauerfilter — die Stufen ergeben sich aus den vorhandenen Aufgaben
+  const dauern = [...new Set(aufgaben.map(a => a.dauer))].sort((x,y) => x-y);
+  if(!dauern.includes(zustand.dauer)) zustand.dauer = 0;
+  $('dauer-filter').innerHTML = '<span class="label">Dauer</span>' +
+    [0, ...dauern].map(d =>
+      `<button class="chip" data-dauer="${d}" aria-pressed="${zustand.dauer===d}">${d===0?'Egal':minuten(d)}</button>`).join('');
+
+  // Kategoriefilter
+  const kats = [...new Set(aufgaben.map(a => a.kategorie).filter(Boolean))].sort();
+  $('kat-filter').innerHTML = '<span class="label">Kategorie</span>' +
+    ['alle', ...kats].map(k =>
+      `<button class="chip" data-kat="${esc(k)}" aria-pressed="${zustand.kategorie===k}">${k==='alle'?'Alle':esc(k)}</button>`).join('');
+  $('kat-liste').innerHTML = kats.map(k => `<option value="${esc(k)}">`).join('');
+
+  // Ziehung
+  const pool = passendeAufgaben();
+  if(zustand.gezogen.length){
+    $('ziehung').innerHTML = zustand.gezogen.map((a,i) =>
+      karteHtml(a, zustand.modus === 'gruppe' && zustand.gezogen.length > 1 ? i+1 : null)).join('');
+    const maxDauer = Math.max(...zustand.gezogen.map(a => a.dauer));
+    $('ueben-aktionen').innerHTML = `<div class="btn-reihe">
+        <button class="btn" id="start">${minuten(maxDauer)} starten</button>
+        <button class="btn sekundaer" id="neu">Neu ziehen</button></div>`;
+    $('start').onclick = () => timerStarten(maxDauer * 60);
+    $('neu').onclick = ziehen;
+  } else if(!pool.length){
+    $('ziehung').innerHTML = `<div class="leer"><strong>Keine Aufgabe im Filter</strong>
+      ${aufgaben.length ? 'Nimm einen Filter zurück oder leg unter „Aufgaben“ etwas Passendes an.'
+                        : 'Leg unter „Aufgaben“ die erste Übung an.'}</div>`;
+    $('ueben-aktionen').innerHTML = '';
+  } else {
+    $('ziehung').innerHTML = `<div class="leer"><strong>${pool.length} Aufgaben im Topf</strong>
+      ${zustand.modus === 'gruppe' ? 'Zieht für jede Station eine eigene Aufgabe.' : 'Der Zufall entscheidet.'}</div>`;
+    $('ueben-aktionen').innerHTML = `<div class="btn-reihe"><button class="btn" id="los">Aufgabe ziehen</button></div>`;
+    $('los').onclick = ziehen;
+  }
+
+  // Pflegeliste
+  $('pflege-liste').innerHTML = aufgaben.length
+    ? aufgaben.map(a => `<div class="liste-zeile">
+        <span class="dauer">${a.dauer}′</span>
+        <div class="txt"><strong>${esc(a.titel)}</strong><small>${esc(a.kategorie || 'Ohne Kategorie')}</small></div>
+        <button class="klein" data-bearbeiten="${a.id}">Ändern</button>
+        <button class="klein gefahr" data-loeschen="${a.id}">Löschen</button></div>`).join('')
+    : `<div class="leer"><strong>Noch keine Aufgaben</strong>Trag oben die erste ein.</div>`;
+
+  chipsVerdrahten();
+}
+
+function chipsVerdrahten(){
+  document.querySelectorAll('[data-dauer]').forEach(b => b.onclick = () => {
+    zustand.dauer = +b.dataset.dauer; zustand.gezogen = [];
+    document.querySelectorAll('[data-dauer]').forEach(x =>
+      x.setAttribute('aria-pressed', x === b)); zeichnen(); });
+  document.querySelectorAll('[data-kat]').forEach(b => b.onclick = () => {
+    zustand.kategorie = b.dataset.kat; zustand.gezogen = []; zeichnen(); });
+  document.querySelectorAll('[data-stationen]').forEach(b => b.onclick = () => {
+    zustand.stationen = +b.dataset.stationen; zustand.gezogen = [];
+    document.querySelectorAll('[data-stationen]').forEach(x =>
+      x.setAttribute('aria-pressed', x === b)); zeichnen(); });
+  document.querySelectorAll('[data-bearbeiten]').forEach(b => b.onclick = () => bearbeiten(b.dataset.bearbeiten));
+  document.querySelectorAll('[data-loeschen]').forEach(b => b.onclick = async () => {
+    const a = aufgaben.find(x => x.id === b.dataset.loeschen);
+    if(!confirm(`„${a.titel}“ löschen?`)) return;
+    aufgaben = aufgaben.filter(x => x.id !== a.id);
+    zustand.gezogen = []; await Speicher.schreiben(aufgaben); zeichnen(); });
+}
+
+/* =========================================================================
+   6. Timer
+   ========================================================================= */
+const UMFANG = 2 * Math.PI * 46;
+let rest = 0, gesamt = 0, ticker = null, laeuft = false, wakeLock = null;
+
+function zeitText(s){ return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); }
+
+function timerZeichnen(){
+  $('ziffern').textContent = zeitText(Math.max(0, rest));
+  $('ring').style.strokeDashoffset = UMFANG * (1 - rest / gesamt);
+  $('timer').classList.toggle('warnung', rest <= 60 && rest > 0);
+}
+
+async function timerStarten(sekunden){
+  gesamt = rest = sekunden;
+  $('timer-titel').textContent = zustand.gezogen.map(a => a.titel).join(' · ');
+  $('timer-hinweis').textContent = zustand.modus === 'gruppe' && zustand.gezogen.length > 1
+    ? 'Alle Stationen laufen gleichzeitig.' : '';
+  $('timer').classList.add('an'); timerZeichnen(); laeuft = true;
+  $('t-pause').textContent = 'Pause';
+  clearInterval(ticker);
+  ticker = setInterval(() => {
+    if(!laeuft) return;
+    rest--; timerZeichnen();
+    if(rest <= 0){ clearInterval(ticker); signal(); }
+  }, 1000);
+  try{ wakeLock = await navigator.wakeLock.request('screen'); }catch(e){}
+}
+
+function timerBeenden(){
+  clearInterval(ticker); laeuft = false;
+  $('timer').classList.remove('an','warnung');
+  if(wakeLock){ wakeLock.release(); wakeLock = null; }
+}
+
+function signal(){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, .45, .9].forEach(t => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(.001, ctx.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(.3, ctx.currentTime + t + .02);
+      g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + t + .3);
+      o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + .32);
+    });
+  }catch(e){}
+  if(navigator.vibrate) navigator.vibrate([300,150,300,150,300]);
+}
+
+$('t-pause').onclick = () => { laeuft = !laeuft; $('t-pause').textContent = laeuft ? 'Pause' : 'Weiter'; };
+$('t-stopp').onclick = timerBeenden;
+
+/* =========================================================================
+   7. Aufgaben pflegen
+   ========================================================================= */
+function bearbeiten(id){
+  const a = aufgaben.find(x => x.id === id);
+  zustand.bearbeitet = id; zustand.tab = 'pflege';
+  $('formular-titel').textContent = 'Aufgabe ändern';
+  $('f-titel').value = a.titel; $('f-dauer').value = a.dauer; $('f-kat').value = a.kategorie || '';
+  $('f-text').value = a.text || ''; $('f-loesung').value = a.loesung || ''; $('f-material').value = a.material || ''; $('f-lernziel').value = a.lernziel || '';
+  $('f-speichern').textContent = 'Änderung speichern'; $('f-abbrechen').hidden = false;
+  zeichnen(); window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function formularLeeren(){
+  zustand.bearbeitet = null;
+  $('formular').reset(); $('f-dauer').value = 5;
+  $('formular-titel').textContent = 'Neue Aufgabe';
+  $('f-speichern').textContent = 'Aufgabe speichern';
+  $('f-abbrechen').hidden = true;
+}
+
+$('formular').onsubmit = async e => {
+  e.preventDefault();
+  const daten = {
+    titel: $('f-titel').value.trim(), dauer: +$('f-dauer').value,
+    kategorie: $('f-kat').value.trim(), text: $('f-text').value.trim(),
+    loesung: $('f-loesung').value.trim(),
+    material: $('f-material').value.trim(), lernziel: $('f-lernziel').value.trim()
+  };
+  if(!daten.titel) return;
+  if(zustand.bearbeitet){
+    Object.assign(aufgaben.find(a => a.id === zustand.bearbeitet), daten);
+  } else {
+    aufgaben.push({id: neueId(), ...daten});
+  }
+  zustand.gezogen = [];
+  await Speicher.schreiben(aufgaben);
+  formularLeeren(); zeichnen();
+};
+$('f-abbrechen').onclick = () => { formularLeeren(); zeichnen(); };
+
+$('export').onclick = () => {
+  const blob = new Blob([JSON.stringify(aufgaben, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'handgriffe.json'; a.click();
+};
+
+$('import').onclick = () => {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.json,application/json';
+  inp.onchange = async () => {
+    try{
+      const gelesen = JSON.parse(await inp.files[0].text());
+      if(!Array.isArray(gelesen)) throw 0;
+      aufgaben = gelesen.map(a => ({...a, id: a.id || neueId(), dauer: +a.dauer || 5}));
+      zustand.gezogen = []; await Speicher.schreiben(aufgaben); zeichnen();
+    }catch(e){ alert('Diese Datei enthält keine gültige Aufgabenliste.'); }
+  };
+  inp.click();
+};
+
+$('reset').onclick = async () => {
+  if(!confirm('Alle Änderungen verwerfen und die 5 Aufgaben aus der Tabelle laden?')) return;
+  aufgaben = STANDARD.map(a => ({id: neueId(), ...a}));
+  zustand.gezogen = []; await Speicher.schreiben(aufgaben); zeichnen();
+};
+
+/* =========================================================================
+   8. Start
+   ========================================================================= */
+$('m-einzel').onclick = () => { zustand.modus = 'einzel'; zustand.gezogen = []; zeichnen(); };
+$('m-gruppe').onclick = () => { zustand.modus = 'gruppe'; zustand.gezogen = []; zeichnen(); };
+$('t-ueben').onclick  = () => { zustand.tab = 'ueben'; zeichnen(); };
+$('t-pflege').onclick = () => { zustand.tab = 'pflege'; zeichnen(); };
+
+// Offline-Betrieb: Service Worker registrieren (nur bei https oder localhost)
+if('serviceWorker' in navigator && location.protocol === 'https:'){
+  navigator.serviceWorker.register('sw.js').catch(e => console.warn('Offline-Modus nicht aktiv', e));
+}
+
+(async () => {
+  aufgaben = await Speicher.lesen() || STANDARD.map(a => ({id: neueId(), ...a}));
+  zeichnen();
+})();
+</script>
